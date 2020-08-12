@@ -3,16 +3,41 @@
 require_once 'connection.php';
  
 // Define variables and initialize with empty values
-$title = $content = "";
+$id = $title = $content = "";
 $title_err = $content_err = "";
  
 // Processing form data when form is submitted
-if($_SERVER["REQUEST_METHOD"] == "POST"){
+if($_SERVER["REQUEST_METHOD"] == "POST") {
+
+        // Prepare a select statement
+        $sql = "SELECT id FROM articles WHERE id = ?";
+        
+        if($stmt = mysqli_prepare($link, $sql)){
+            // Bind variables to the prepared statement as parameters
+            mysqli_stmt_bind_param($stmt, "s", $param_id);
+            
+            // Set parameters
+            $param_id = trim($_POST["id"]);
+            
+            // Attempt to execute the prepared statement
+            if(mysqli_stmt_execute($stmt)){
+                /* store result */
+                mysqli_stmt_store_result($stmt);
+                
+                $id = trim($_POST["id"]);
+            } else {
+                echo "Oops! Something went wrong. Please try again later.";
+            }
+        }
+         
+        // Close statement
+        mysqli_stmt_close($stmt);
+    }
  
     // Validate title
-    if(empty(trim($_POST["title"]))){
+    if(empty(trim($_POST["title"]))) {
         $title_err = "Please enter title.";
-    } else{
+    } else {
         // Prepare a select statement
         $sql = "SELECT id FROM articles WHERE title = ?";
         
@@ -49,13 +74,14 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     if(empty($title_err) && empty($content_err)){
         
         // Prepare an insert statement
-        $sql = "UPDATE articles SET title=?, content=? WHERE id='".$_POST['id']."'";
+        $sql = "UPDATE articles SET title=?, content=? WHERE id=?";
          
         if($stmt = mysqli_prepare($link, $sql)){
             // Bind variables to the prepared statement as parameters
-            mysqli_stmt_bind_param($stmt, "ss", $param_title, $param_content);
+            mysqli_stmt_bind_param($stmt, "sss", $param_title, $param_content, $param_id);
             
             // Set parameters
+            $param_id = $id;
             $param_title = $title;
             $param_content = $content;
             
@@ -80,5 +106,4 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     
     // Close connection
     mysqli_close($link);
-}
 ?>

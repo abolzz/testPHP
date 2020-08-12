@@ -73,7 +73,10 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     } else {
         if(!empty($title_err)) {
             echo $title_err;
+        } elseif (!empty($content_err)) {
+            echo $content_err;
         } else {
+            echo $title_err;
             echo $content_err;
         }
     }

@@ -59,6 +59,11 @@
 	</main>
 
 	<script>
+		function showEditForm() {
+			document.getElementById('editform<?php echo $this_article['id'] ?>').classList.remove('d-none');
+			this.classList.add('d-none');
+		}
+		
 		var search_result = '';
 		function showResult(str) {
 		  if (str.length == 0) {
